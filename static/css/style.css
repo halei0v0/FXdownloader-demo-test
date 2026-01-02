@@ -1,51 +1,6 @@
-/* ===================== 简洁深色设计系统 ===================== */
+/* ===================== 简洁亮色设计系统 ===================== */
 
 :root {
-    /* 深色主题色彩 */
-    --primary: #3b82f6;
-    --primary-hover: #2563eb;
-    --primary-light: rgba(59, 130, 246, 0.15);
-    --success: #22c55e;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #06b6d4;
-    
-    /* 背景色系 - 深色 */
-    --bg-body: #1d232a;
-    --bg-card: #191e24;
-    --bg-card-hover: #242b33;
-    --bg-input: #2a323c;
-    --bg-input-focus: #343d4a;
-    
-    /* 文字颜色 */
-    --text-primary: #f5f5f5;
-    --text-secondary: #a6adbb;
-    --text-muted: #6b7280;
-    
-    /* 边框 */
-    --border: rgba(255, 255, 255, 0.08);
-    --border-focus: var(--primary);
-    
-    /* 阴影 */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
-    
-    /* 圆角 */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-    
-    /* 动画 */
-    --transition: all 0.2s ease;
-    --focus-ring: 0 0 0 2px rgba(59, 130, 246, 0.35);
-    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-/* ===================== 亮色主题 ===================== */
-
-[data-theme="light"] {
     /* 亮色主题色彩 */
     --primary: #3b82f6;
     --primary-hover: #2563eb;
@@ -75,43 +30,63 @@
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+    
+    /* 圆角 */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    
+    /* 动画 */
+    --transition: all 0.2s ease;
+    --focus-ring: 0 0 0 2px rgba(59, 130, 246, 0.35);
+    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* 主题切换按钮样式 */
-.theme-toggle {
-    position: relative;
-    width: 44px;
-    height: 24px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: var(--transition);
+/* ===================== 深色主题 ===================== */
+
+[data-theme="dark"] {
+    /* 深色主题滚动条 */
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+}
+    /* 深色主题色彩 */
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --primary-light: rgba(59, 130, 246, 0.15);
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #06b6d4;
+    
+    /* 背景色系 - 深色 */
+    --bg-body: #1d232a;
+    --bg-card: #191e24;
+    --bg-card-hover: #242b33;
+    --bg-input: #2a323c;
+    --bg-input-focus: #343d4a;
+    
+    /* 文字颜色 */
+    --text-primary: #f5f5f5;
+    --text-secondary: #a6adbb;
+    --text-muted: #6b7280;
+    
+    /* 边框 */
+    --border: rgba(255, 255, 255, 0.08);
+    --border-focus: var(--primary);
+    
+    /* 阴影 */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
-.theme-toggle:hover {
-    background: var(--bg-input-focus);
-}
 
-.theme-toggle-slider {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 18px;
-    height: 18px;
-    background: var(--primary);
-    border-radius: 50%;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 10px;
-}
-
-[data-theme="light"] .theme-toggle-slider {
-    transform: translateX(20px);
-}
 
 /* ===================== 基础重置 ===================== */
 
@@ -136,12 +111,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.25);
 }
 
 body {

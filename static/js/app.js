@@ -3944,12 +3944,13 @@ document.addEventListener('DOMContentLoaded', initWindowControls);
 // ===================== 主题切换功能 =====================
 
 class ThemeManager {
-    static STORAGE_KEY = 'fxdownloader-theme';
-    static DEFAULT_THEME = 'dark';
+    static STORAGE_KEY = 'fanqie_theme';
+    static THEME_LIGHT = 'light';
+    static THEME_DARK = 'dark';
     
     static init() {
-        // 初始化主题
-        const savedTheme = localStorage.getItem(this.STORAGE_KEY) || this.DEFAULT_THEME;
+        // 从本地存储加载主题偏好，默认为亮色
+        const savedTheme = localStorage.getItem(this.STORAGE_KEY) || this.THEME_LIGHT;
         this.setTheme(savedTheme);
         
         // 绑定主题切换按钮
@@ -3960,19 +3961,18 @@ class ThemeManager {
     }
     
     static setTheme(theme) {
-        const root = document.documentElement;
+        const html = document.documentElement;
         const themeIcon = document.getElementById('themeIcon');
         
-        // 设置主题属性
-        if (theme === 'light') {
-            root.setAttribute('data-theme', 'light');
+        if (theme === this.THEME_DARK) {
+            html.setAttribute('data-theme', 'dark');
             if (themeIcon) {
-                themeIcon.setAttribute('icon', 'line-md:sun');
+                themeIcon.setAttribute('icon', 'line-md:moon-twotone-alt');
             }
         } else {
-            root.removeAttribute('data-theme');
+            html.removeAttribute('data-theme');
             if (themeIcon) {
-                themeIcon.setAttribute('icon', 'line-md:moon');
+                themeIcon.setAttribute('icon', 'line-md:sun-rising-twotone-loop');
             }
         }
         
@@ -3981,17 +3981,13 @@ class ThemeManager {
     }
     
     static toggleTheme() {
-        const currentTheme = localStorage.getItem(this.STORAGE_KEY) || this.DEFAULT_THEME;
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        const currentTheme = document.documentElement.getAttribute('data-theme') || this.THEME_LIGHT;
+        const newTheme = currentTheme === this.THEME_DARK ? this.THEME_LIGHT : this.THEME_DARK;
         this.setTheme(newTheme);
-        
-        // 显示提示消息
-        const themeText = newTheme === 'dark' ? '深色主题' : '浅色主题';
-        Toast.show(`已切换至${themeText}`, 'success', 2000);
     }
     
     static getCurrentTheme() {
-        return localStorage.getItem(this.STORAGE_KEY) || this.DEFAULT_THEME;
+        return document.documentElement.getAttribute('data-theme') || this.THEME_LIGHT;
     }
 }
 
