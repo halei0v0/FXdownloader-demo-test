@@ -1895,6 +1895,14 @@ function initializeUI(skipApiSources = false) {
     initChapterModalEvents();
     initSearchListInteractions();
     
+    // GitHub按钮
+    const githubBtn = document.getElementById('githubBtn');
+    if (githubBtn) {
+        githubBtn.addEventListener('click', () => {
+            window.open('https://github.com/halei0v0/FXdownloader', '_blank');
+        });
+    }
+    
     // 初始化语言切换
     const langBtn = document.getElementById('langToggle');
     if (langBtn) {

@@ -299,6 +299,7 @@ body {
 .dashboard-main {
     display: flex;
     flex-direction: column;
+    height: 100%;
     min-height: 0;
     overflow: hidden;
 }
@@ -316,6 +317,8 @@ body {
 
 .content-card {
     flex: 1;
+    height: 100%;
+    min-height: 0;
 }
 
 /* ===================== 标签页 ===================== */
@@ -373,6 +376,7 @@ body {
     flex-direction: column;
     overflow: hidden;
     padding: 20px;
+    height: 100%;
     min-height: 0;
 }
 
@@ -574,6 +578,7 @@ iconify-icon {
     flex: 1;
     display: flex;
     flex-direction: column;
+    height: 100%;
     min-height: 0;
     overflow: hidden;
 }
@@ -793,6 +798,7 @@ iconify-icon {
 }
 
 #tab-queue {
+    height: 100%;
     overflow-y: auto;
 }
 
@@ -1075,6 +1081,7 @@ iconify-icon {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    height: 100%;
     min-height: 0;
     overflow: hidden;
 }
@@ -1249,8 +1256,9 @@ iconify-icon {
         height: auto;
     }
     .dashboard-container {
-        height: auto;
+        height: 100vh;
         overflow-y: auto;
+        min-height: 600px;
     }
     .dashboard-sidebar {
         flex-direction: row;

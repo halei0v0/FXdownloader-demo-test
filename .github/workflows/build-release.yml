@@ -122,13 +122,13 @@ jobs:
       matrix:
         include:
           # Windows 发布版
-          - os: windows-latest
-            variant: release
-            executable: FXdownloader
-            ext: .exe
-            release_name: FXdownloader.exe
-            artifact_name: FXdownloader-windows-x64
-            build_flags: '--windowed'
+          # - os: windows-latest
+          #   variant: release
+          #   executable: FXdownloader
+          #   ext: .exe
+          #   release_name: FXdownloader.exe
+          #   artifact_name: FXdownloader-windows-x64
+          #   build_flags: '--windowed'
           # Windows 调试版
           - os: windows-latest
             variant: debug
@@ -138,45 +138,45 @@ jobs:
             artifact_name: FXdownloader-debug-windows-x64
             build_flags: '--console'
           # Windows Standalone (内置 WebView2)
-          - os: windows-latest
-            variant: release-standalone
-            executable: FXdownloader-Standalone
-            ext: .exe
-            release_name: FXdownloader-Standalone.exe
-            artifact_name: FXdownloader-standalone-windows-x64
-            build_flags: '--windowed --add-data "WebView2;WebView2"'
+          # - os: windows-latest
+          #   variant: release-standalone
+          #   executable: FXdownloader-Standalone
+          #   ext: .exe
+          #   release_name: FXdownloader-Standalone.exe
+          #   artifact_name: FXdownloader-standalone-windows-x64
+          #   build_flags: '--windowed --add-data "WebView2;WebView2"'
           # Linux 发布版
-          - os: ubuntu-latest
-            variant: release
-            executable: FXdownloader
-            ext: ''
-            release_name: FXdownloader-linux
-            artifact_name: FXdownloader-linux-x64
-            build_flags: '--windowed'
+          #- os: ubuntu-latest
+          #  variant: release
+          #  executable: FXdownloader
+          #  ext: ''
+          #  release_name: FXdownloader-linux
+          #  artifact_name: FXdownloader-linux-x64
+          #  build_flags: '--windowed'
           # Linux 调试版
-          - os: ubuntu-latest
-            variant: debug
-            executable: FXdownloader-debug
-            ext: ''
-            release_name: FXdownloader-debug-linux
-            artifact_name: FXdownloader-debug-linux-x64
-            build_flags: '--console'
+          #- os: ubuntu-latest
+          #  variant: debug
+          #  executable: FXdownloader-debug
+          #  ext: ''
+          #  release_name: FXdownloader-debug-linux
+          #  artifact_name: FXdownloader-debug-linux-x64
+          #  build_flags: '--console'
           # macOS 发布版
-          - os: macos-latest
-            variant: release
-            executable: FXdownloader
-            ext: ''
-            release_name: FXdownloader-macos
-            artifact_name: FXdownloader-macos-x64
-            build_flags: '--windowed'
+          #- os: macos-latest
+          #  variant: release
+          #  executable: FXdownloader
+          #  ext: ''
+          #  release_name: FXdownloader-macos
+          #  artifact_name: FXdownloader-macos-x64
+          #  build_flags: '--windowed'
           # macOS 调试版
-          - os: macos-latest
-            variant: debug
-            executable: FXdownloader-debug
-            ext: ''
-            release_name: FXdownloader-debug-macos
-            artifact_name: FXdownloader-debug-macos-x64
-            build_flags: '--console'
+          #- os: macos-latest
+          #  variant: debug
+          #  executable: FXdownloader-debug
+          #  ext: ''
+          #  release_name: FXdownloader-debug-macos
+          #  artifact_name: FXdownloader-debug-macos-x64
+          #  build_flags: '--console'
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} - ${{ matrix.variant }}
