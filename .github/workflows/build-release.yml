@@ -43,24 +43,34 @@ jobs:
       - name: Generate version
         id: version
         run: |
-          # 获取最新版本号并增加补丁版本
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
-          if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+          # 从API获取最新版本号并递增
+          API_URL="https://api.github.com/repos/${{ github.repository }}/releases/latest"
+          HTTP_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
+          LATEST_VERSION=$(echo $HTTP_RESPONSE | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
+          
+          # 如果没有获取到版本号，使用默认版本
+          if [[ -z "$LATEST_VERSION" ]]; then
+            LATEST_VERSION="?.?.?"
+          fi
+          
+          # 解析版本号并递增
+          if [[ "$LATEST_VERSION" =~ ^([0-100]+)\.([0-100]+)\.([0-100]+)$ ]]; then
             MAJOR=${BASH_REMATCH[1]}
             MINOR=${BASH_REMATCH[2]}
             PATCH=${BASH_REMATCH[3]}
-            # 增加补丁版本号
+            
+            # 递增补丁版本号
             PATCH=$((PATCH + 1))
             VERSION="$MAJOR.$MINOR.$PATCH"
           else
-            VERSION="1.0.0"
+            # 如果格式不匹配，使用默认版本
+            VERSION="?.?.?"
           fi
           
           BUILD_TIME=$(date -u +'%Y-%m-%d %H:%M:%S UTC')
           
           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             TAG_NAME="${{ github.ref_name }}"
-            VERSION=${TAG_NAME#v}
           else
             TAG_NAME="v$VERSION"
           fi
@@ -78,20 +88,18 @@ jobs:
           tag_name: ${{ steps.version.outputs.TAG_NAME }}
           name: "FXdownloader ${{ steps.version.outputs.TAG_NAME }}"
           body: |
-            ## 🎉 FXdownloader ${{ steps.version.outputs.TAG_NAME }}
+            ## 🚀 FXdownloader ${{ steps.version.outputs.TAG_NAME }}
             
-            ### 🔄 构建状态
-            
+            ### 🔄 构建状态            
             | 平台 | 状态 |
             | :--- | :--- |
-            | 💻 Windows | ⏳ 编译中... |
-            | 📦 Windows Standalone | ⏳ 编译中... |
-            | 🐧 Linux | ⏳ 编译中... |
-            | 🍎 macOS | ⏳ 编译中... |
-            | 🤖 Termux ARM64 | ⏳ 编译中... |
+            | 💻 Windows | 🔄 编译中.. |
+            | 📦 Windows Standalone | 🔄 编译中.. |
+            | 🐧 Linux | 🔄 编译中.. |
+            | 🍎 macOS | 🔄 编译中.. |
+            | 🤖 Termux ARM64 | 🔄 编译中.. |
             
-            > **💡 提示**: 无需等待全部完成，文件出现在 Assets 即可下载使用。
-            
+            > **💡 提示**: 无需等待全部完成，文件出现在 Assets 即可下载使用！            
             ---
             
             ### 📋 构建信息
@@ -531,8 +539,7 @@ jobs:
             
             ---
             
-            ### 🔄 构建状态
-            
+            ### 🔄 构建状态            
             | 平台 | 状态 |
             | :--- | :--- |
             | 💻 Windows | ✅ 完成 |
@@ -547,8 +554,8 @@ jobs:
             
             | 平台 | 推荐文件 | 说明 |
             | :--- | :--- | :--- |
-            | **🪟 Windows** | `FXdownloader.exe` | ✅ **首选** (内置运行库，开箱即用) |
-            | | `FXdownloader-Standalone.exe` | 纯净版 (需自备 WebView2) |
+            | **🪟 Windows** | `FXdownloader.exe` | 🌟 **首选** (内置运行库，开箱即用) |
+            | **📦 Windows Standalone** | `FXdownloader-Standalone.exe` | 纯净版 (需自备WebView2)(已内置WebView2) |
             | **🐧 Linux** | `FXdownloader-linux` | x64 架构 (需安装 GTK3/WebKit) |
             | **🍎 macOS** | `FXdownloader-macos` | Intel 芯片 (x64) |
             | **🤖 Termux** | `FXdownloader-termux-arm64` | Android Termux 命令行版 |
@@ -574,18 +581,15 @@ jobs:
           body: |
             ## ⚠️ FXdownloader ${{ needs.prepare-release.outputs.tag_name }}
             
-            > 部分平台构建失败，但已完成的版本可正常使用。
-            
-            ### 🔄 构建状态
-            
+            > 部分平台构建失败，但已完成的版本可正常使用！            
+            ### 🔄 构建状态            
             ${{ steps.check_builds.outputs.status }}
             
             ---
             
             ### 📥 可用下载
             
-            请从下方 Assets 中选择已完成编译的版本下载。
-            
+            请从下方 Assets 中选择已完成编译的版本下载！            
             ---
             
             ### 📋 构建信息
