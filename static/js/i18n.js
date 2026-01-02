@@ -1,7 +1,7 @@
 const translations = {
     "zh": {
         // Header
-        "app_title": "FXdownloader",
+        "app_title": "番茄小说下载器",
         
         // Tabs
         "tab_search": "搜索书籍",
@@ -144,9 +144,9 @@ const translations = {
         "msg_ready": "初始化完成，准备就绪",
         "msg_init_partial": "部分初始化完成",
         "msg_check_network": "请检查网络连接",
-        "msg_request_fail": "请求失败: ",
-        "msg_book_info_fail": "获取书籍信息失败: ",
-        "msg_search_fail": "搜索失败: ",
+        "msg_request_fail": "请求失败【可能是请求过于频繁，等一下再试吧~~】",
+        "msg_book_info_fail": "获取书籍信息失败【可能是请求过于频繁，等一下再试吧~~】",
+        "msg_search_fail": "搜索失败",
         "msg_searching": "正在搜索: {0}",
         "msg_task_started": "下载任务已启动",
         "msg_added_to_queue": "已加入待下载：{0}",
@@ -199,7 +199,7 @@ const translations = {
     },
     "en": {
         // Header
-        "app_title": "Tomato Novel Downloader",
+        "app_title": "FXdownloader",
         
         // Tabs
         "tab_search": "Search Books",

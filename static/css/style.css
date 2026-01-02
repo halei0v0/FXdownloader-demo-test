@@ -46,15 +46,6 @@
 /* ===================== 深色主题 ===================== */
 
 [data-theme="dark"] {
-    /* 深色主题滚动条 */
-    &::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.15);
-    }
-    
-    &::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.25);
-    }
-}
     /* 深色主题色彩 */
     --primary: #3b82f6;
     --primary-hover: #2563eb;
