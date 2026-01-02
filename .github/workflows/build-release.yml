@@ -11,6 +11,8 @@ on:
 
 permissions:
   contents: write
+  packages: write
+  deployments: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -43,18 +45,40 @@ jobs:
       - name: Generate version
         id: version
         run: |
-          # 从API获取最新版本号并递增
-          API_URL="https://api.github.com/repos/${{ github.repository }}/releases/latest"
-          HTTP_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
-          LATEST_VERSION=$(echo $HTTP_RESPONSE | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
+          # 设置重试次数
+          MAX_RETRIES=3
+          RETRY_COUNT=0
           
-          # 如果没有获取到版本号，使用默认版本
-          if [[ -z "$LATEST_VERSION" ]]; then
-            LATEST_VERSION="?.?.?"
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES to get latest version..."
+            
+            # 从API获取最新版本号并递增
+            API_URL="https://api.github.com/repos/${{ github.repository }}/releases/latest"
+            
+            # 添加超时和更好的错误处理
+            HTTP_RESPONSE=$(curl -s --max-time 30 --retry 2 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$API_URL")
+            CURL_EXIT_CODE=$?
+            
+            if [ $CURL_EXIT_CODE -eq 0 ]; then
+              LATEST_VERSION=$(echo "$HTTP_RESPONSE" | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
+              echo "API response: $HTTP_RESPONSE"
+              echo "Extracted version: $LATEST_VERSION"
+              break
+            else
+              echo "Failed to fetch from API (exit code: $CURL_EXIT_CODE), retrying..."
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              sleep 10
+            fi
+          done
+          
+          # 如果重试后仍然失败，使用默认版本
+          if [ $RETRY_COUNT -eq $MAX_RETRIES ] || [[ -z "$LATEST_VERSION" ]]; then
+            echo "Failed to get version from API after $MAX_RETRIES attempts, using default version"
+            LATEST_VERSION="1.0.0"
           fi
           
           # 解析版本号并递增
-          if [[ "$LATEST_VERSION" =~ ^([0-100]+)\.([0-100]+)\.([0-100]+)$ ]]; then
+          if [[ "$LATEST_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             MAJOR=${BASH_REMATCH[1]}
             MINOR=${BASH_REMATCH[2]}
             PATCH=${BASH_REMATCH[3]}
@@ -62,9 +86,12 @@ jobs:
             # 递增补丁版本号
             PATCH=$((PATCH + 1))
             VERSION="$MAJOR.$MINOR.$PATCH"
+            
+            echo "Parsed version: $LATEST_VERSION -> $VERSION"
           else
             # 如果格式不匹配，使用默认版本
-            VERSION="?.?.?"
+            echo "Version format not recognized: $LATEST_VERSION, using default"
+            VERSION="1.0.1"
           fi
           
           BUILD_TIME=$(date -u +'%Y-%m-%d %H:%M:%S UTC')
@@ -81,8 +108,24 @@ jobs:
           echo "Generated version: $VERSION"
           echo "Tag name: $TAG_NAME"
 
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          TAG_NAME="${{ steps.version.outputs.TAG_NAME }}"
+          echo "Checking if tag $TAG_NAME exists..."
+          
+          # 检查标签是否已存在
+          if git rev-parse --verify "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists"
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag $TAG_NAME does not exist"
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create Release
         id: create_release
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.TAG_NAME }}
@@ -111,8 +154,28 @@ jobs:
           draft: false
           prerelease: false
           make_latest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ""
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get existing Release
+        id: get_existing_release
+        if: steps.check_tag.outputs.tag_exists == 'true'
+        run: |
+          TAG_NAME="${{ steps.version.outputs.TAG_NAME }}"
+          echo "Getting existing release for tag $TAG_NAME..."
+          
+          # 获取现有release的ID和upload_url
+          RELEASE_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+          
+          RELEASE_ID=$(echo "$RELEASE_INFO" | grep '"id":' | head -n 1 | sed -E 's/.*"id": ?([0-9]+).*/\1/')
+          UPLOAD_URL=$(echo "$RELEASE_INFO" | grep '"upload_url":' | sed -E 's/.*"upload_url": ?"([^"]+)".*/\1/' | sed 's/{.*//')
+          
+          echo "id=$RELEASE_ID" >> $GITHUB_OUTPUT
+          echo "upload_url=$UPLOAD_URL" >> $GITHUB_OUTPUT
+          echo "Found existing release ID: $RELEASE_ID"
 
   build:
     needs: [prepare-release]
@@ -330,8 +393,7 @@ jobs:
         with:
           tag_name: ${{ needs.prepare-release.outputs.tag_name }}
           files: dist/${{ matrix.release_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build completed
         run: echo "✅ Build and artifact prepared for ${{ matrix.variant }}"
@@ -463,8 +525,7 @@ jobs:
         with:
           tag_name: ${{ needs.prepare-release.outputs.tag_name }}
           files: dist/FXdownloader-termux-arm64
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Termux build completed
         run: echo "✅ Termux ARM64 build completed"
@@ -569,8 +630,7 @@ jobs:
             | 🔗 **Commit** | `${{ github.sha }}` |
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Release (some builds failed)
         if: steps.check_builds.outputs.all_success != 'true'
@@ -599,5 +659,4 @@ jobs:
             | 🔗 **Commit** | `${{ github.sha }}` |
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
